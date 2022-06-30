@@ -2,7 +2,7 @@ import pickle
 import numpy as np 
 from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt 
-from sklearn.preprocessing import StandardScaler, Normalizer
+from sklearn.preprocessing import StandardScaler, Normalizer, MinMaxScaler
 plt.rcParams.update({'font.size': 16})
 plt.tight_layout()
 def unpickling(x):
@@ -10,8 +10,8 @@ def unpickling(x):
 
 
 def plot_graph(x_before, x_after):
-        x_before = unpickling(x_before)
-        x_after = unpickling(x_after)
+        x_before = unpickling(x_before)[0]
+        x_after = unpickling(x_after)[0]
 
         print (x_before.shape, x_after.shape)
         pca = PCA(n_components=2)
@@ -24,8 +24,10 @@ def plot_graph(x_before, x_after):
 
         x_before = np.array(x_before)
         x_after = np.array(x_after)
-        x_before = x_before/4500
-        x_after = x_after/4500
+        mini = min(np.amin(x_before), np.amin(x_after))
+        maxi = max(np.amax(x_before), np.amax(x_after))
+        x_before = (x_before - np.amin(x_before))/ (np.amax(x_before) - np.amin(x_before))
+        x_after = (x_after - np.amin(x_after))/ (np.amax(x_after) - np.amin(x_after))
 
         aset = set([tuple(x) for x in x_before])
         bset = set([tuple(x) for x in x_after])
@@ -38,13 +40,13 @@ def plot_graph(x_before, x_after):
         plt.scatter(x_diff[:,0], x_diff[:,1], color = 'red', label = 'Adversary', marker = 'x')
         plt.xlabel("Principal Component 1")
         plt.ylabel("Principal Component 2")
-        plt.xlim([-1, 1])
-        plt.ylim([-1, 1])
+        plt.xlim([0, 1])
+        plt.ylim([0, 1])
         plt.legend()
         plt.tight_layout()
-        plt.savefig('withGAN4.pdf')
+        plt.savefig('nonGAN6.pdf')
         plt.show()
 
 
-#plot_graph('X_Legit_NonGAN.pkl', 'X_Adver_NonGAN.pkl')
-plot_graph('X_Legit_GAN.pkl','X_Adver_GAN.pkl')
+plot_graph('X_Legit_NonGAN.pkl', 'X_Adver_NonGAN.pkl')
+#plot_graph('X_Legit_GAN.pkl','X_Adver_GAN.pkl')
